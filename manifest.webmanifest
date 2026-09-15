@@ -1,0 +1,27 @@
+{
+  "name": "مُرشِدي — منصّة دعم قرار اختيار التخصّص",
+  "short_name": "مُرشِدي",
+  "description": "مشروع طلابي مستقل من Vcoders لمقارنة البرامج الجامعية والكلفة بمصادر عامة واضحة",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#013070",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
