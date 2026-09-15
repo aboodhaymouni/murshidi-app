@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">مُرشِدي</string>
+    <string name="title_activity_main">مُرشِدي</string>
+    <string name="package_name">jo.mizan.app</string>
+    <string name="custom_url_scheme">jo.mizan.app</string>
+</resources>
