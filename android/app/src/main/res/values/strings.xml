@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">مُرشِدي</string>
     <string name="title_activity_main">مُرشِدي</string>
-    <string name="package_name">jo.mizan.app</string>
-    <string name="custom_url_scheme">jo.mizan.app</string>
+    <string name="package_name">jo.vcoders.murshidi</string>
+    <string name="custom_url_scheme">jo.vcoders.murshidi</string>
 </resources>

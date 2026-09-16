@@ -1,7 +1,7 @@
 {
   "name": "murshidi",
   "displayName": "مُرشِدي | Murshidi",
-  "description": "منصة وطنية لدعم قرار اختيار التخصص الجامعي - بالشراكة مع وزارة التعليم العالي والبحث العلمي",
+  "description": "منصة وطنية لدعم قرار اختيار التخصص الجامعي - تعتمد على البيانات المنشورة من وزارة التعليم العالي ودائرة الإحصاءات العامة",
   "version": "1.0.0",
   "author": "عبدالرحمن الهيموني",
   "license": "MIT",
@@ -10,8 +10,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "node scripts/build-pages.mjs",
+    "build:apk": "npm run build && npx cap sync android",
     "lint": "eslint .",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning --import ./scripts/ts-test-register.mjs --test src/lib/tawjihi.test.ts",
     "preview": "vite preview",
+    "tawjihi:gen": "node scripts/gen-tawjihi.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "android:sync": "npm run build && npx cap sync android",
     "android:open": "npx cap open android"
@@ -20,6 +24,7 @@
     "@capacitor/android": "^8.3.1",
     "@capacitor/cli": "^8.3.1",
     "@capacitor/core": "^8.3.1",
+    "@capacitor/splash-screen": "^8.0.2",
     "autoprefixer": "^10.5.0",
     "lucide-react": "^1.11.0",
     "postcss": "^8.5.11",

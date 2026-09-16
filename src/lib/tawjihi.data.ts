@@ -1,0 +1,564 @@
+// GENERATED FILE — do not edit by hand.
+// Source of truth: docs/tawjihi-2026-official.json (checked against the Ministry PDFs in
+// docs/sources/). Regenerate with: npm run tawjihi:gen
+//
+// Authority: مجلس التعليم العالي — وزارة التعليم العالي والبحث العلمي، المملكة الأردنية الهاشمية
+// Decision page dated 2024-09-08, effective from the 2026/2027 academic year.
+// Retrieved 2026-09-16.
+
+export const TAWJIHI_SOURCE = {
+  authorityAr: 'مجلس التعليم العالي — وزارة التعليم العالي والبحث العلمي، المملكة الأردنية الهاشمية',
+  authorityEn: 'Higher Education Council — Ministry of Higher Education and Scientific Research, Jordan',
+  decisionPage: 'https://www.mohe.gov.jo/Ar/NewsDetails/مجلس_التعليم_العالي_يحدد_الكلياتالتخصصات_التي_يمكن_لطلبة_الثانوية_العامة_الخطة_الجديدة_المسار_الأكاديمي_والمسار_المهني_الالتحاق_بها_اعتباراً_من_العام_الجامعي_2026_2027',
+  pageDate: '2024-09-08',
+  pdfAcademic: 'https://www.mohe.gov.jo/EBV4.0/Root_Storage/AR/EB_News/تخصصات_المسار_الاكاديمي_2026-2027.pdf',
+  pdfVocational: 'https://www.mohe.gov.jo/EBV4.0/Root_Storage/AR/EB_News/تخصصات_المسار_المهني_2026-2027_1.pdf',
+  appliesFrom: '2026/2027',
+  retrieved: '2026-09-16',
+  militaryMarkerAr: '*** هذه البرامج خاصة بالكليات العسكرية',
+} as const;
+
+export interface AcademicFieldRecord {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  colleges: string[];
+}
+
+export interface VocationalProgramRecord {
+  id: string;
+  order: number;
+  nameAr: string;
+  nameEn: string;
+  diploma: string[];
+  technicalBachelor: string[];
+}
+
+export interface AdmissionTier {
+  percent: number;
+  outOf1400: number;
+  ar: string;
+}
+
+export interface MajorMinimumAverage {
+  /** Official minimum to APPLY at a public university — not the competitive cut-off. */
+  public: number;
+  private: number;
+  tierAr: string;
+}
+
+export interface MajorEligibilityRecord {
+  academicFields: string[];
+  officialCollege: string;
+  explicit: boolean;
+  coveredBy?: string;
+  vocationalPrograms: string[];
+  vocationalDegree?: string;
+  vocationalNote: string;
+  minimumAverage?: MajorMinimumAverage;
+}
+
+export const ACADEMIC_FIELDS: AcademicFieldRecord[] = [
+  {
+    id: 'health',
+    nameAr: 'الحقل الصحي',
+    nameEn: 'Health field',
+    colleges: [
+      'الطب البشري',
+      'طب الأسنان',
+      'العلوم الصيدلانية',
+      'التمريض',
+      'العلوم الطبية المساندة',
+      'علوم التأهيل',
+      'الطب البيطري',
+    ],
+  },
+  {
+    id: 'engineering',
+    nameAr: 'الحقل الهندسي',
+    nameEn: 'Engineering field',
+    colleges: [
+      'الهندسة',
+      'هندسة العمارة',
+    ],
+  },
+  {
+    id: 'science-tech',
+    nameAr: 'حقل العلوم والتكنولوجيا',
+    nameEn: 'Science and Technology field',
+    colleges: [
+      'العلوم',
+      'تكنولوجيا المعلومات',
+      'علوم الحاسوب',
+      'الذكاء الاصطناعي',
+      'الزراعة',
+      'تخصصات التغذية، تخصصات علم الغذاء',
+      'علم المحافظة على الآثار / صيانة المصادر التراثية وإدارتها',
+    ],
+  },
+  {
+    id: 'languages-social',
+    nameAr: 'حقل اللغات والعلوم الاجتماعية',
+    nameEn: 'Languages and Social Sciences field',
+    colleges: [
+      'اللغات',
+      'الآداب',
+      'التربية',
+      'التربية الرياضية بمختلف مسمياتها',
+      'الفنون',
+      'الصحافة والإعلام',
+      'فنون الطهي',
+      'الآثار والسياحة',
+      'التربية الفنية',
+      'التربية المهنية',
+    ],
+  },
+  {
+    id: 'law-sharia',
+    nameAr: 'حقل القانون والعلوم الشرعية',
+    nameEn: 'Law and Islamic Sciences field',
+    colleges: [
+      'الحقوق/القانون',
+      'الشريعة الإسلامية',
+    ],
+  },
+  {
+    id: 'business',
+    nameAr: 'حقل الأعمال',
+    nameEn: 'Business field',
+    colleges: [
+      'تخصصات الأعمال',
+      'تخصصات العلوم المالية والمصرفية',
+    ],
+  },
+];
+
+export const VOCATIONAL_PROGRAMS: VocationalProgramRecord[] = [
+  {
+    id: 'engineering',
+    order: 1,
+    nameAr: 'برنامج الهندسة',
+    nameEn: 'Engineering programme',
+    diploma: [
+      'نظم القوى الكهربائية',
+      'أتوترونيكس الآليات الثقيلة***',
+      'الإنتاج والتصنيع المحوسب',
+      'ميكانيك مركبات آليات ثقيلة***',
+      'خدمة المركبات الكهربائية والهجينة',
+      'الطاقة المتجددة',
+      'التحكم الصناعي',
+      'المعدات والتركيبات الكهربائية',
+      'النظم الهيدروليكية والكهرورئوية في الآليات الثقيلة***',
+      'الاتصالات وشبكات الحاسوب',
+      'معالجة المياه',
+      'الصناعات الكيميائية',
+      'الصيانة الميكانيكية والكهربائية للسفن',
+      'النظم الهيدروليكية في الآليات الثقيلة',
+      'السباكة واللحام',
+      'النظم الإلكترونية',
+      'الصحة والسلامة والبيئة المهنية',
+      'تقنيات الإطفاء والإنقاذ / الإطفاء والإنقاذ***',
+      'تقنيات الوقاية والسلامة العامة / الوقاية والسلامة العامة***',
+      'هندسة الاتصالات / ويفضل الاتصالات***',
+      'الاتصالات الجوية',
+      'تكنولوجيا الأجهزة الطبية / ويفضل (صيانة الأجهزة الطبية)***',
+      'المناجم والتعدين',
+      'صيانة الطائرات',
+      'إلكترونيات الطيران***',
+      'النظم الكهربائية والأجهزة الدقيقة في الطائرات***',
+      'محركات الطائرات***',
+      'هياكل الطائرات***',
+      'المهمات الأرضية والآليات الخاصة في المطارات***',
+      'الأسلحة الموجهة***',
+      'هندسة نظم الطائرات بدون طيار (درونز) — جديد',
+      'تقنيات المواد الخطرة***',
+      'إدارة البيئة',
+    ],
+    technicalBachelor: [
+      'تكنولوجيا الأنظمة الهيدروليكية في الآليات الثقيلة',
+      'تكنولوجيا خدمة المركبات الكهربائية والهجينة',
+      'تكنولوجيا تقييم المنشآت وصيانتها',
+      'تكنولوجيا التكييف والتبريد',
+      'الأتمتة وهندسة التحكم',
+      'هندسة النظم الحاسوبية',
+      'الهندسة الكهربائية والإلكترونية',
+      'هندسة النظم الإلكترونية',
+      'هندسة التصنيع',
+      'الهندسة الميكانيكية',
+      'هندسة الميكاترونكس',
+      'الهندسة النووية',
+      'هندسة العمليات',
+      'هندسة السكك الحديدية',
+      'هندسة الطيران',
+      'تكنولوجيا صيانة الطائرات',
+    ],
+  },
+  {
+    id: 'construction',
+    order: 2,
+    nameAr: 'برنامج الإنشاءات',
+    nameEn: 'Construction programme',
+    diploma: [
+      'نظم المعلومات الجغرافية والاستشعار عن بعد',
+      'خدمات البناء / التكييف والتبريد والتدفئة',
+      'خدمات البناء / الأعمال الكهربائية',
+      'المساحة',
+      'المساحة وحساب الكميات',
+      'العمارة والتصميم الداخلي',
+      'الأبنية الذكية',
+      'إنشاء وصيانة المباني',
+      'إدارة البناء',
+      'الصيانة الكهروميكانيكية',
+      'السكك الحديدية',
+    ],
+    technicalBachelor: [
+      'هندسة مدنية',
+      'هندسة العمارة',
+      'المساحة',
+      'خدمات البناء / الكهرباء',
+    ],
+  },
+  {
+    id: 'it',
+    order: 3,
+    nameAr: 'برنامج تكنولوجيا المعلومات',
+    nameEn: 'Information Technology programme',
+    diploma: [
+      'الشبكات السحابية',
+      'البرمجة التطبيقية',
+      'تحليل البيانات',
+      'الأمن السيبراني',
+      'البرمجيات التطبيقية',
+      'الذكاء الاصطناعي والروبوتات',
+      'ذكاء الأعمال',
+      'الأرشفة الرقمية',
+      'شبكات الحاسوب',
+    ],
+    technicalBachelor: [
+      'تخصصات كلية تكنولوجيا المعلومات',
+      'تخصصات علم الحاسوب',
+      'تخصصات الذكاء الاصطناعي',
+    ],
+  },
+  {
+    id: 'art-design',
+    order: 4,
+    nameAr: 'برنامج الفن والتصميم',
+    nameEn: 'Art and Design programme',
+    diploma: [
+      'فن إنتاج وترميم الفسيفساء',
+      'التصميم الجرافيكي',
+      'تصميم الأزياء والحياكة',
+      'الموسيقى',
+    ],
+    technicalBachelor: [
+      'فنون تشكيلية',
+      'فنون رقمية',
+      'تصميم وفنون تطبيقية',
+      'فنون بصرية',
+      'فنون مسرحية',
+      'موسيقى',
+      'دراما',
+      'التصميم والتواصل البصري',
+      'تخطيط وتصميم المدن',
+      'التصميم الجرافيكي',
+      'التصميم الداخلي',
+      'التحريك والوسائط المتعددة',
+      'تكنولوجيا تصميم الفيلم الرقمي',
+      'تصميم الأزياء والإكسسوارات',
+      'الأزياء والموضة',
+      'التصوير الفوتوغرافي',
+      'التصميم السينمائي والتلفزيوني والمسرحي',
+      'تكنولوجيا الوسائط المتعددة',
+      'فنون إسلامية تطبيقية',
+      'العمارة الداخلية والديكور',
+    ],
+  },
+  {
+    id: 'beauty',
+    order: 5,
+    nameAr: 'برنامج التجميل',
+    nameEn: 'Beauty programme',
+    diploma: [
+      'فن التجميل',
+    ],
+    technicalBachelor: [
+      'تخصصات التجميل والشعر',
+    ],
+  },
+  {
+    id: 'creative-media',
+    order: 6,
+    nameAr: 'برنامج الوسائط الإبداعية',
+    nameEn: 'Creative Media programme',
+    diploma: [
+      'الإعلام الرقمي',
+      'الإنتاج التلفزيوني والإخراج',
+      'فنون السينما والتلفزيون',
+      'فنون الألعاب والرسوم المتحركة',
+      'الوسائط المتعددة الرقمية',
+      'الصحافة',
+      'الصحافة والإعلام',
+      'الإذاعة والتلفزيون',
+      'العلاقات العامة والإعلان',
+      'الإعلام وتكنولوجيا الاتصال',
+      'الصحافة والإعلام الرقمي / الإعلام الرقمي',
+    ],
+    technicalBachelor: [
+      'فنون إنتاج الصوت',
+      'الإذاعة والتلفزيون',
+      'تكنولوجيا الوسائط المتعددة والجرافيك',
+      'إنتاج الوسائط الإبداعية',
+      'الأفلام',
+      'التأثيرات البصرية',
+      'تطوير الألعاب',
+    ],
+  },
+  {
+    id: 'travel-tourism',
+    order: 7,
+    nameAr: 'برنامج السفر والسياحة',
+    nameEn: 'Travel and Tourism programme',
+    diploma: [
+      'الإدارة السياحية والضيافة',
+      'إدارة السياحة والسفر / طيران',
+      'إدارة السياحة والسفر / إدارة الوجهة',
+      'إدارة السياحة والسفر / إدارة المناسبات',
+      'إدارة السياحة والسفر / الابتكار والثقافة والحضارة',
+      'إدارة السياحة والسفر / إدارة الاستدامة',
+      'إدارة السياحة والسفر / عمليات الجولات',
+    ],
+    technicalBachelor: [
+      'الآثار',
+      'الآثار والسياحة',
+      'الإدارة السياحية',
+      'الانثروبولوجيا',
+      'إدارة السياحة والسفر',
+      'الطيران',
+      'إدارة الوجهة',
+      'إدارة المناسبات',
+      'الابتكار والثقافة والحضارة',
+      'إدارة الاستدامة',
+      'عمليات الجولات',
+    ],
+  },
+  {
+    id: 'hospitality',
+    order: 8,
+    nameAr: 'برنامج الضيافة',
+    nameEn: 'Hospitality programme',
+    diploma: [
+      'إدارة الفنادق',
+      'الخدمات الفندقية',
+      'خدمات المسافرين',
+      'فنون الطهي',
+    ],
+    technicalBachelor: [
+      'إدارة الطعام والشراب',
+      'إدارة فندقية',
+      'إدارة فنون الطهي',
+      'إدارة الفنادق والمطاعم',
+      'الإدارة الفندقية',
+      'إدارة الفنادق والمطاعم والفعاليات',
+      'إدارة المناسبات',
+      'التسويق والمبيعات المبتكرة',
+      'الإقامة وإدارة الإيرادات',
+    ],
+  },
+  {
+    id: 'business',
+    order: 9,
+    nameAr: 'برنامج الأعمال',
+    nameEn: 'Business programme',
+    diploma: [
+      'المحاسبة',
+      'التكنولوجيا المالية',
+      'المحاسبة التقنية / المحاسبة المهنية',
+      'المحاسبة والتدقيق',
+      'الأعمال الإلكترونية',
+      'إدارة التزويد',
+      'إدارة المستودعات***',
+      'إدارة التزويد الفني***',
+      'الدعم اللوجستي',
+      'العلوم الجمركية والضريبية',
+      'التسويق الإلكتروني',
+      'إدارة الأعمال',
+      'السكرتاريا التنفيذية',
+      'الريادة وإدارة الأعمال الصغيرة',
+      'أمن الطيران والسلامة الجوية (جديد)',
+    ],
+    technicalBachelor: [
+      'تخصصات الأعمال',
+      'تخصصات العلوم المالية والمصرفية',
+    ],
+  },
+  {
+    id: 'agriculture',
+    order: 10,
+    nameAr: 'برنامج التعليم الزراعي',
+    nameEn: 'Agricultural Education programme',
+    diploma: [
+      'الإنتاج الحيواني',
+      'الإنتاج النباتي',
+      'التصنيع الغذائي',
+      'إنتاج المحاصيل',
+      'الزراعة الذكية',
+      'استزراع الأسماك',
+      'تربية النحل',
+      'الرعاية البيطرية',
+    ],
+    technicalBachelor: [
+      'تخصصات الزراعة',
+      'تخصصات التغذية وعلم الغذاء',
+    ],
+  },
+];
+
+export const MAJOR_ELIGIBILITY: Record<string, MajorEligibilityRecord> = {
+  'medicine': {
+    academicFields: ['health'],
+    officialCollege: 'الطب البشري',
+    explicit: true,
+    vocationalPrograms: [],
+    vocationalNote: 'لا يوجد مسار مهني يؤدّي إلى الطب البشري في الجدول الرسمي.',
+    minimumAverage: { public: 90, private: 90, tierAr: 'الطب وطب الأسنان' },
+  },
+  'pharmacy': {
+    academicFields: ['health'],
+    officialCollege: 'العلوم الصيدلانية',
+    explicit: true,
+    vocationalPrograms: [],
+    vocationalNote: 'لا يوجد مسار مهني يؤدّي إلى العلوم الصيدلانية في الجدول الرسمي.',
+    minimumAverage: { public: 80, private: 80, tierAr: 'الهندسة والعمارة والصيدلة' },
+  },
+  'nursing': {
+    academicFields: ['health'],
+    officialCollege: 'التمريض',
+    explicit: true,
+    vocationalPrograms: [],
+    vocationalNote: 'لا يوجد مسار مهني يؤدّي إلى التمريض في الجدول الرسمي.',
+    minimumAverage: { public: 70, private: 70, tierAr: 'التمريض والعلوم الطبية المساندة وعلوم التأهيل' },
+  },
+  'civil-eng': {
+    academicFields: ['engineering'],
+    officialCollege: 'الهندسة',
+    explicit: false,
+    coveredBy: 'الهندسة',
+    vocationalPrograms: ['construction'],
+    vocationalDegree: 'هندسة مدنية — بكالوريوس تقني/تطبيقي',
+    vocationalNote: 'متاح من برنامج الإنشاءات بدرجة البكالوريوس التقني/التطبيقي، وهي درجة مختلفة عن البكالوريوس الأكاديمي.',
+    minimumAverage: { public: 80, private: 80, tierAr: 'الهندسة والعمارة والصيدلة' },
+  },
+  'architecture': {
+    academicFields: ['engineering'],
+    officialCollege: 'هندسة العمارة',
+    explicit: true,
+    vocationalPrograms: ['construction'],
+    vocationalDegree: 'هندسة العمارة — بكالوريوس تقني/تطبيقي',
+    vocationalNote: 'متاح من برنامج الإنشاءات بدرجة البكالوريوس التقني/التطبيقي.',
+    minimumAverage: { public: 80, private: 80, tierAr: 'الهندسة والعمارة والصيدلة' },
+  },
+  'cs': {
+    academicFields: ['science-tech'],
+    officialCollege: 'علوم الحاسوب',
+    explicit: true,
+    vocationalPrograms: ['it'],
+    vocationalDegree: 'تخصصات علم الحاسوب — بكالوريوس تقني/تطبيقي',
+    vocationalNote: 'متاح من برنامج تكنولوجيا المعلومات.',
+    minimumAverage: { public: 75, private: 75, tierAr: 'تخصصات كلية تكنولوجيا المعلومات والذكاء الاصطناعي باستثناء هندسة الحاسوب' },
+  },
+  'data-science': {
+    academicFields: ['science-tech'],
+    officialCollege: 'تكنولوجيا المعلومات',
+    explicit: false,
+    coveredBy: 'تكنولوجيا المعلومات',
+    vocationalPrograms: ['it'],
+    vocationalDegree: 'تخصصات كلية تكنولوجيا المعلومات — بكالوريوس تقني/تطبيقي',
+    vocationalNote: '«تحليل البيانات» مدرج كبرنامج دبلوم في المسار المهني.',
+    minimumAverage: { public: 75, private: 75, tierAr: 'تخصصات كلية تكنولوجيا المعلومات والذكاء الاصطناعي باستثناء هندسة الحاسوب' },
+  },
+  'cyber': {
+    academicFields: ['science-tech'],
+    officialCollege: 'تكنولوجيا المعلومات',
+    explicit: false,
+    coveredBy: 'تكنولوجيا المعلومات',
+    vocationalPrograms: ['it'],
+    vocationalDegree: 'تخصصات كلية تكنولوجيا المعلومات — بكالوريوس تقني/تطبيقي',
+    vocationalNote: '«الأمن السيبراني» مدرج كبرنامج دبلوم في المسار المهني.',
+    minimumAverage: { public: 75, private: 75, tierAr: 'تخصصات كلية تكنولوجيا المعلومات والذكاء الاصطناعي باستثناء هندسة الحاسوب' },
+  },
+  'media': {
+    academicFields: ['languages-social'],
+    officialCollege: 'الصحافة والإعلام',
+    explicit: true,
+    vocationalPrograms: ['creative-media'],
+    vocationalDegree: 'الإذاعة والتلفزيون / إنتاج الوسائط الإبداعية — بكالوريوس تقني/تطبيقي',
+    vocationalNote: '«الصحافة والإعلام» مدرجة كبرنامج دبلوم ضمن برنامج الوسائط الإبداعية.',
+    minimumAverage: { public: 65, private: 60, tierAr: 'باقي التخصصات في الكليات الأخرى' },
+  },
+  'law': {
+    academicFields: ['law-sharia'],
+    officialCollege: 'الحقوق/القانون',
+    explicit: true,
+    vocationalPrograms: [],
+    vocationalNote: 'لا يوجد مسار مهني يؤدّي إلى الحقوق في الجدول الرسمي.',
+    minimumAverage: { public: 65, private: 65, tierAr: 'باقي التخصصات (رسمي) · القانون (خاص)' },
+  },
+  'business': {
+    academicFields: ['business'],
+    officialCollege: 'تخصصات الأعمال',
+    explicit: true,
+    vocationalPrograms: ['business', 'hospitality', 'travel-tourism'],
+    vocationalDegree: 'تخصصات الأعمال — بكالوريوس تقني/تطبيقي',
+    vocationalNote: '«إدارة الأعمال» مدرجة كبرنامج دبلوم ضمن برنامج الأعمال.',
+    minimumAverage: { public: 65, private: 60, tierAr: 'باقي التخصصات في الكليات الأخرى' },
+  },
+  'accounting': {
+    academicFields: ['business'],
+    officialCollege: 'تخصصات العلوم المالية والمصرفية',
+    explicit: false,
+    coveredBy: 'تخصصات الأعمال / تخصصات العلوم المالية والمصرفية',
+    vocationalPrograms: ['business'],
+    vocationalDegree: 'تخصصات العلوم المالية والمصرفية — بكالوريوس تقني/تطبيقي',
+    vocationalNote: '«المحاسبة» و«المحاسبة والتدقيق» مدرجتان كبرامج دبلوم ضمن برنامج الأعمال.',
+    minimumAverage: { public: 65, private: 60, tierAr: 'باقي التخصصات في الكليات الأخرى' },
+  },
+};
+
+/**
+ * The published minimum average required to APPLY — قرار مجلس التعليم العالي 295/2026.
+ * This is NOT the competitive cut-off (الحد الأدنى التنافسي), which had not been
+ * published for 2026/2027 when this file was generated.
+ */
+export const ADMISSION_MINIMUMS = {
+  source: {
+    documentAr: 'السياسة العامة لقبول الطلبة الأردنيين في الجامعات الأردنية والكليات الجامعية لمرحلة البكالوريوس للعام الجامعي 2026/2027',
+    decisionAr: 'قرار مجلس التعليم العالي رقم (295/2026) تاريخ 25/6/2026',
+    legalBasisAr: 'المادة (6) البند (6) من قانون التعليم العالي والبحث العلمي رقم (17) لسنة 2018 وتعديلاته',
+    url: 'https://www.admhec.gov.jo/Files/BachelorPolicy2026.pdf',
+    localCopy: 'docs/sources/admhec-bachelor-policy-2026-2027.pdf',
+    sectionAr: 'ثالثاً/أ — صفحتا 11 و12',
+    retrieved: '2026-09-16',
+  },
+  universalSubjectFloorAr: 'على أن لا تقل علامة الطالب في كل مادة من مواد الثانوية العامة عن ما نسبته (50%) من الحد الأعلى لعلامة المادة',
+  universalSubjectFloorEn: 'No subject mark below 50% of that subject\'s maximum.',
+  note1400Ar: 'عمود «المجموع من 1400» يخصّ الشهادات التي لا تحتوي على معدل. شهادات الخطة الجديدة تحمل معدلاً من 100، فيُستخدم عمود المعدل المئوي.',
+  note1400En: 'The 1400 column applies only to certificates that carry no average. New-plan certificates carry a percentage, so use the percentage column.',
+  technicalEngineeringPercent: 70,
+  technicalEngineeringAr: 'برامج البكالوريوس في التخصصات الهندسية التقنية التي تتطلب دراستها أربع سنوات منتظمة أو ما يعادلها بحد أدنى (132) ساعة معتمدة',
+  publicUniversities: [
+    { percent: 90, outOf1400: 1260, ar: 'الطب وطب الأسنان' },
+    { percent: 80, outOf1400: 1120, ar: 'الهندسة والعمارة والصيدلة ودكتور في الطب البيطري' },
+    { percent: 75, outOf1400: 1050, ar: 'الشريعة، تخصصات كلية تكنولوجيا المعلومات والذكاء الاصطناعي باستثناء هندسة الحاسوب' },
+    { percent: 70, outOf1400: 980, ar: 'التمريض، والعلوم الطبية المساندة، وعلوم التأهيل، تخصصات التغذية، تخصصات علم الغذاء، علم التجميل، علم النفس السريري، علم النفس الاكلينيكي' },
+    { percent: 65, outOf1400: 910, ar: 'باقي التخصصات في الكليات الأخرى' },
+  ] as AdmissionTier[],
+  privateUniversities: [
+    { percent: 90, outOf1400: 1260, ar: 'الطب وطب الأسنان' },
+    { percent: 80, outOf1400: 1120, ar: 'الهندسة والعمارة والصيدلة' },
+    { percent: 75, outOf1400: 1050, ar: 'الشريعة، تخصصات كلية تكنولوجيا المعلومات والذكاء الاصطناعي باستثناء هندسة الحاسوب' },
+    { percent: 70, outOf1400: 980, ar: 'التمريض، والعلوم الطبية المساندة، وعلوم التأهيل، تخصصات التغذية، تخصصات علم الغذاء، علم التجميل، علم النفس السريري، علم النفس الاكلينيكي' },
+    { percent: 65, outOf1400: 910, ar: 'القانون' },
+    { percent: 60, outOf1400: 840, ar: 'باقي التخصصات في الكليات الأخرى' },
+  ] as AdmissionTier[],
+};

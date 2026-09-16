@@ -1,4 +1,4 @@
-package jo.mizan.app;
+package jo.vcoders.murshidi;
 
 import com.getcapacitor.BridgeActivity;
 

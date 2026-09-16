@@ -12,17 +12,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="مُرشِدي" />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="description" content="مُرشِدي | منصّة وطنيّة لدعم قرار اختيار التخصّص الجامعي — بالشراكة مع وزارة التعليم العالي والبحث العلمي" />
-    <meta name="keywords" content="مرشدي, التخصص الجامعي, التوجيهي, الأردن, وزارة التعليم العالي, Murshidi" />
+    <meta name="description" content="مُرشِدي | منصّة وطنيّة لدعم قرار اختيار التخصّص الجامعي — تعتمد على البيانات المنشورة من وزارة التعليم العالي ودائرة الإحصاءات العامّة" />
+    <meta name="keywords" content="مرشدي, التخصص الجامعي, التوجيهي, الأردن, بيانات وزارة التعليم العالي, Murshidi" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Self-hosted: the Arabic interface must render in its own typeface with no
+         network, which is the offline case this app advertises. Arabic + Latin
+         subsets only; both families are SIL OFL 1.1. -->
+    <link rel="preload" as="font" type="font/woff2" href="./fonts/plex-arabic-400-arabic.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="./fonts/plex-arabic-700-arabic.woff2" crossorigin>
+    <link rel="stylesheet" href="./fonts/fonts.css">
 
     <title>مُرشِدي — منصّة دعم قرار اختيار التخصّص</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Plain white field so the very first paint already matches the brand
+         splash; React replaces it the moment it mounts. No logo, no text. -->
+    <div id="root"><div style="position:fixed;inset:0;background:#FFFFFF"></div></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

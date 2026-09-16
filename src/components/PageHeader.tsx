@@ -1,17 +1,20 @@
+import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, UserRound } from 'lucide-react';
 import { useLang } from '../i18n/LangContext';
+import { useAuth } from '../context/AuthContext';
 
 interface Props {
   title: string;
   subtitle?: string;
   back?: boolean;
-  right?: React.ReactNode;
+  right?: ReactNode;
 }
 
 export default function PageHeader({ title, subtitle, back = true, right }: Props) {
   const navigate = useNavigate();
   const { dir, t } = useLang();
+  const { isGuest } = useAuth();
   // In RTL, the back arrow points right (returning to previous, which is to the right);
   // in LTR, it points left.
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
@@ -24,7 +27,7 @@ export default function PageHeader({ title, subtitle, back = true, right }: Prop
           {back && (
             <button
               onClick={() => navigate(-1)}
-              className="w-9 h-9 rounded-md border border-gov-line flex items-center justify-center text-gov-body hover:bg-gov-bg-soft"
+              className="w-11 h-11 rounded-md border border-gov-line flex items-center justify-center text-gov-body hover:bg-gov-bg-soft shrink-0"
               aria-label={t('btn.back')}
             >
               <BackIcon size={18} />
@@ -34,6 +37,14 @@ export default function PageHeader({ title, subtitle, back = true, right }: Prop
             <h1 className="text-base font-bold text-gov-ink truncate leading-tight">{title}</h1>
             {subtitle && <p className="text-xs text-gov-muted truncate mt-0.5">{subtitle}</p>}
           </div>
+          {/* Guest state is stated once, quietly. The way out of it lives on
+              Profile, so this stays a label rather than a nag. */}
+          {isGuest && (
+            <span className="gov-badge gov-badge-neutral shrink-0" title={t('auth.guest.badgeTitle')}>
+              <UserRound size={12} />
+              {t('auth.guest.badge')}
+            </span>
+          )}
           {right}
         </div>
       </div>

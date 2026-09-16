@@ -1,54 +1,152 @@
-import { GraduationCap, FileText } from 'lucide-react';
-import PageHeader from '../components/PageHeader';
+// Alternative post-secondary routes — diplomas, short certificates, bootcamps.
+//
+// Two honesty rules shape this file. First, the only sourced figure on the page
+// is the Department of Statistics unemployment rate at the top; the costs,
+// starting salaries and field-level unemployment rates of the tracks below are
+// illustrative and every card carries the badge. Second, no track is attributed
+// to a named provider or to a named qualification the app cannot cite — the
+// round-one version advertised specific platforms and a specific BTEC diploma
+// by name, which the app has no published basis to describe.
 
-interface Alternative {
-  id: number;
-  name: string;
-  type: 'دبلوم' | 'شهادة' | 'تدريب' | 'BTEC';
-  duration: string;
+import { GraduationCap } from 'lucide-react';
+import PageHeader from '../components/PageHeader';
+import SourceNote from '../components/SourceNote';
+import { dosUnemployment } from '../data/majors';
+import { useLang } from '../i18n/LangContext';
+import type { TranslationKey } from '../i18n/translations';
+import { jod, pct } from '../lib/numerals';
+
+interface QuickRow {
+  id: string;
+  nameKey: TranslationKey;
+  durationKey: TranslationKey;
+  /** Total illustrative cost of the whole route, in JOD. */
+  cost: number;
+  tone: 'long' | 'short';
+}
+
+const QUICK_COMPARE: QuickRow[] = [
+  {
+    id: 'bachelor',
+    nameKey: 'data.alt.quick.bachelor',
+    durationKey: 'data.alt.quick.bachelorDur',
+    cost: 25000,
+    tone: 'long',
+  },
+  {
+    id: 'diploma',
+    nameKey: 'data.alt.quick.diploma',
+    durationKey: 'data.alt.quick.diplomaDur',
+    cost: 5000,
+    tone: 'short',
+  },
+  {
+    id: 'certs',
+    nameKey: 'data.alt.quick.certs',
+    durationKey: 'data.alt.quick.certsDur',
+    cost: 1500,
+    tone: 'short',
+  },
+];
+
+interface AlternativeTrack {
+  id: string;
+  nameKey: TranslationKey;
+  descKey: TranslationKey;
+  typeKey: TranslationKey;
+  durationKey: TranslationKey;
+  /** All three figures are illustrative; the card says so. */
   cost: number;
   startSalary: number;
   unemployment: number;
-  description: string;
 }
 
-const alternatives: Alternative[] = [
-  { id: 1, name: 'دبلوم التصميم الداخلي', type: 'دبلوم', duration: 'سنتان',
-    cost: 4500, startSalary: 380, unemployment: 22,
-    description: 'بديل عملي للهندسة المعماريّة. الدخول إلى السوق أسرع، والكلفة أقلّ من البكالوريوس.' },
-  { id: 2, name: 'شهادات AutoCAD و Revit و 3D', type: 'شهادة', duration: '6 أشهر',
-    cost: 1800, startSalary: 450, unemployment: 18,
-    description: 'مسار قصير سريع الدخل لمن يهتمّ بالتصميم الإنشائي والمعماري.' },
-  { id: 3, name: 'تدريب Full-Stack Web Development', type: 'تدريب', duration: '9 أشهر',
-    cost: 2500, startSalary: 650, unemployment: 8,
-    description: 'بديل قوي لعلوم الحاسوب عبر منصّات مثل Edraak و Udacity. الأهمّ بناء ملف أعمال فعلي.' },
-  { id: 4, name: 'دبلوم BTEC في الأمن السيبراني', type: 'BTEC', duration: 'سنتان',
-    cost: 3800, startSalary: 580, unemployment: 6,
-    description: 'برنامج رسمي معتمد من وزارة العمل. الطلب يفوق العرض في الأردن.' },
-  { id: 5, name: 'دبلوم التمريض', type: 'دبلوم', duration: '3 سنوات',
-    cost: 5400, startSalary: 380, unemployment: 11,
-    description: 'فرص عمل ممتازة في الخليج وأوروبا. أقصر بسنة من البكالوريوس.' },
-  { id: 6, name: 'شهادات Google Career', type: 'شهادة', duration: '4-6 أشهر',
-    cost: 600, startSalary: 480, unemployment: 15,
-    description: 'تخصّصات: تحليل البيانات، إدارة المشاريع، تجربة المستخدم. معترف بها عالميّاً.' },
+const TRACKS: AlternativeTrack[] = [
+  {
+    id: 'interior',
+    nameKey: 'data.alt.item.interior.name',
+    descKey: 'data.alt.item.interior.desc',
+    typeKey: 'data.alt.type.diploma',
+    durationKey: 'data.alt.dur.twoYears',
+    cost: 4500,
+    startSalary: 380,
+    unemployment: 22,
+  },
+  {
+    id: 'cad',
+    nameKey: 'data.alt.item.cad.name',
+    descKey: 'data.alt.item.cad.desc',
+    typeKey: 'data.alt.type.certificate',
+    durationKey: 'data.alt.dur.sixMonths',
+    cost: 1800,
+    startSalary: 450,
+    unemployment: 18,
+  },
+  {
+    id: 'fullstack',
+    nameKey: 'data.alt.item.fullstack.name',
+    descKey: 'data.alt.item.fullstack.desc',
+    typeKey: 'data.alt.type.bootcamp',
+    durationKey: 'data.alt.dur.nineMonths',
+    cost: 2500,
+    startSalary: 650,
+    unemployment: 8,
+  },
+  {
+    id: 'cyber',
+    nameKey: 'data.alt.item.cyber.name',
+    descKey: 'data.alt.item.cyber.desc',
+    typeKey: 'data.alt.type.diploma',
+    durationKey: 'data.alt.dur.twoYears',
+    cost: 3800,
+    startSalary: 580,
+    unemployment: 6,
+  },
+  {
+    id: 'nursing',
+    nameKey: 'data.alt.item.nursing.name',
+    descKey: 'data.alt.item.nursing.desc',
+    typeKey: 'data.alt.type.diploma',
+    durationKey: 'data.alt.dur.threeYears',
+    cost: 5400,
+    startSalary: 380,
+    unemployment: 11,
+  },
+  {
+    id: 'career',
+    nameKey: 'data.alt.item.career.name',
+    descKey: 'data.alt.item.career.desc',
+    typeKey: 'data.alt.type.certificate',
+    durationKey: 'data.alt.dur.fourToSixMonths',
+    cost: 600,
+    startSalary: 480,
+    unemployment: 15,
+  },
 ];
 
 export default function Alternatives() {
+  const { t, lang } = useLang();
+
   return (
     <div className="min-h-screen bg-gov-bg pb-24">
-      <PageHeader title="المسارات البديلة" subtitle="ليست الجامعة الطريق الوحيد" />
+      <PageHeader title={t('data.alt.title')} subtitle={t('data.alt.subtitle')} />
 
-      {/* Intro */}
+      {/* Intro — the one sourced figure on this page */}
       <div className="bg-white border-b border-gov-line p-4">
-        <div className="bg-gov-bg-soft border-r-4 border-r-gov-green rounded-gov p-3">
+        <div className="bg-gov-bg-soft border-s-4 border-s-gov-green rounded-gov p-3">
           <div className="flex items-start gap-2">
             <GraduationCap size={16} className="text-gov-green shrink-0 mt-0.5" />
-            <div>
-              <p className="text-[11px] font-semibold text-gov-green mb-1">رسالة مهمّة</p>
-              <p className="text-xs text-gov-body leading-relaxed">
-                بحسب DOS، يعمل 45% من خرّيجي الجامعات الأردنيّة في تخصّصات مختلفة عن دراستهم. الدبلومات والشهادات
-                المهنيّة قد تكون بديلاً أنسب من بكالوريوس في تخصّص لا يخدم السوق.
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-gov-green mb-1">
+                {t('data.alt.messageTitle')}
               </p>
+              <p className="text-xs text-gov-body leading-relaxed">{t('data.alternatives.message')}</p>
+              <p className="text-xs text-gov-ink font-semibold mt-2">
+                {t('data.alternatives.context')}:{' '}
+                <span className="tabular">{pct(dosUnemployment.jordanians, 1)}</span>{' '}
+                <span className="font-normal text-gov-muted">({t('data.dos.period')})</span>
+              </p>
+              <SourceNote className="mt-1.5" source={dosUnemployment.source} />
             </div>
           </div>
         </div>
@@ -56,67 +154,81 @@ export default function Alternatives() {
 
       {/* Quick comparison */}
       <div className="p-4">
-        <h3 className="gov-section-title mb-2">مقارنة سريعة</h3>
+        <h3 className="gov-section-title mb-2 flex items-center gap-2">
+          {t('data.alt.quickCompare')}
+          <SourceNote source="illustrative" compact className="ms-auto" />
+        </h3>
         <div className="gov-card overflow-hidden">
           <table className="gov-table">
             <thead>
               <tr>
-                <th>المسار</th>
-                <th className="text-left">المدّة</th>
-                <th className="text-left">الكلفة</th>
+                <th>{t('data.alt.col.track')}</th>
+                <th className="text-end">{t('data.alt.col.duration')}</th>
+                <th className="text-end">{t('data.alt.col.cost')}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="font-medium text-gov-ink">بكالوريوس جامعي تقليدي</td>
-                <td className="text-left tabular text-gov-danger">4-6 سنوات</td>
-                <td className="text-left tabular font-semibold">25,000 د.أ</td>
-              </tr>
-              <tr>
-                <td className="font-medium text-gov-ink">دبلوم BTEC مهني</td>
-                <td className="text-left tabular text-gov-ok">سنتان</td>
-                <td className="text-left tabular font-semibold">5,000 د.أ</td>
-              </tr>
-              <tr>
-                <td className="font-medium text-gov-ink">شهادات تخصّصيّة قصيرة</td>
-                <td className="text-left tabular text-gov-ok">6-9 أشهر</td>
-                <td className="text-left tabular font-semibold">1,500 د.أ</td>
-              </tr>
+              {QUICK_COMPARE.map((row) => (
+                <tr key={row.id}>
+                  <td className="font-medium text-gov-ink">{t(row.nameKey)}</td>
+                  <td
+                    className={`text-end tabular ${
+                      row.tone === 'long' ? 'text-gov-danger' : 'text-gov-ok'
+                    }`}
+                  >
+                    {t(row.durationKey)}
+                  </td>
+                  <td className="text-end tabular font-semibold whitespace-nowrap">
+                    {jod(row.cost, lang)}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Alternatives list */}
+      {/* The tracks themselves */}
       <div className="px-4">
-        <h3 className="gov-section-title mb-2">المسارات المتاحة</h3>
+        <h3 className="gov-section-title mb-2">{t('data.alt.available')}</h3>
         <div className="space-y-3">
-          {alternatives.map((a) => (
+          {TRACKS.map((a) => (
             <div key={a.id} className="gov-card overflow-hidden">
-              <div className="px-4 py-3 border-b border-gov-line flex items-center justify-between">
-                <h4 className="text-sm font-bold text-gov-ink leading-tight flex-1">{a.name}</h4>
-                <span className="gov-badge gov-badge-info shrink-0">{a.type}</span>
+              <div className="px-4 py-3 border-b border-gov-line flex items-center justify-between gap-2">
+                <h4 className="text-sm font-bold text-gov-ink leading-tight flex-1 min-w-0">
+                  {t(a.nameKey)}
+                </h4>
+                <SourceNote source="illustrative" compact />
+                <span className="gov-badge gov-badge-info shrink-0">{t(a.typeKey)}</span>
               </div>
               <div className="p-4">
-                <p className="text-xs text-gov-body leading-relaxed mb-3">{a.description}</p>
+                <p className="text-xs text-gov-body leading-relaxed mb-3">{t(a.descKey)}</p>
                 <table className="gov-table">
                   <tbody>
                     <tr>
-                      <td className="text-gov-muted">المدّة الزمنيّة</td>
-                      <td className="text-left font-semibold">{a.duration}</td>
+                      <td className="text-gov-muted">{t('data.alt.row.duration')}</td>
+                      <td className="text-end font-semibold">{t(a.durationKey)}</td>
                     </tr>
                     <tr>
-                      <td className="text-gov-muted">الكلفة الإجماليّة</td>
-                      <td className="text-left font-semibold tabular">{a.cost.toLocaleString()} د.أ</td>
+                      <td className="text-gov-muted">{t('data.alt.row.cost')}</td>
+                      <td className="text-end font-semibold tabular whitespace-nowrap">
+                        {jod(a.cost, lang)}
+                      </td>
                     </tr>
                     <tr>
-                      <td className="text-gov-muted">راتب البداية</td>
-                      <td className="text-left font-semibold tabular">{a.startSalary} د.أ</td>
+                      <td className="text-gov-muted">{t('data.alt.row.startSalary')}</td>
+                      <td className="text-end font-semibold tabular whitespace-nowrap">
+                        {jod(a.startSalary, lang)} / {t('common.month')}
+                      </td>
                     </tr>
                     <tr>
-                      <td className="text-gov-muted">نسبة البطالة في المجال</td>
-                      <td className={`text-left font-semibold tabular ${a.unemployment < 15 ? 'text-gov-ok' : 'text-gov-warn'}`}>
-                        {a.unemployment}%
+                      <td className="text-gov-muted">{t('data.alt.row.unemployment')}</td>
+                      <td
+                        className={`text-end font-semibold tabular ${
+                          a.unemployment < 15 ? 'text-gov-ok' : 'text-gov-warn'
+                        }`}
+                      >
+                        {pct(a.unemployment, 0)}
                       </td>
                     </tr>
                   </tbody>
@@ -130,12 +242,7 @@ export default function Alternatives() {
       {/* Source */}
       <div className="px-4 mt-4">
         <div className="bg-gov-bg-soft border border-gov-line rounded-gov p-3">
-          <div className="flex items-start gap-2">
-            <FileText size={14} className="text-gov-muted shrink-0 mt-0.5" />
-            <p className="text-[11px] text-gov-muted leading-relaxed">
-              المسارات البديلة معتمدة من مؤسّسة التدريب المهني ووزارة العمل. تُحدَّث القائمة فصليّاً.
-            </p>
-          </div>
+          <SourceNote source="illustrative" note={t('data.note.alternatives')} />
         </div>
       </div>
     </div>

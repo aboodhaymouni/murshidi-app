@@ -26,6 +26,12 @@ android/capacitor-cordova-android-plugins
 *.keystore
 *.jks
 
-# Env
+# Env (never commit real keys)
 .env
+.env.local
 .env.*.local
+.env.production
+!.env.example
+
+# Local tooling
+.claude/

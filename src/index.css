@@ -197,7 +197,10 @@ body {
   font-size: 13px;
 }
 .gov-table th {
-  text-align: right;
+  /* `start`, not `right`: this rule outranks a Tailwind .text-start utility, so
+     a physical direction here pinned every table header to the right in English
+     too, on every page that uses .gov-table. */
+  text-align: start;
   font-weight: 600;
   color: #1F2937;
   padding: 10px 12px;
@@ -205,12 +208,25 @@ body {
   border-bottom: 1px solid #E5E7EB;
   font-size: 12px;
 }
+/* A column can still choose its own alignment: the rule above is (0,1,1) and
+   would otherwise outrank a bare .text-end/.text-start utility on a <th>. */
+.gov-table th.text-end { text-align: end; }
+.gov-table th.text-start { text-align: start; }
+.gov-table th.text-center { text-align: center; }
 .gov-table td {
   padding: 10px 12px;
   border-bottom: 1px solid #F1F5F9;
   color: #374151;
   vertical-align: middle;
 }
+/* Same hazard as the header alignment above, one line down: `.gov-table td` is
+   (0,1,1) and outranks the (0,1,0) `text-gov-muted` utility, so the label column
+   of every two-column table in the app rendered at the body colour instead of
+   the muted one — 19 cells across seven screens, with the class silently inert.
+   This restores the intended colour without moving the whole component block
+   into @layer components, which would hand EVERY utility priority over EVERY
+   .gov-* rule at once and change screens nobody is able to re-check right now. */
+.gov-table td.text-gov-muted { color: #6B7280; }
 .gov-table tr:last-child td { border-bottom: none; }
 
 /* Tabular nums for stats */
@@ -234,9 +250,17 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* Sliders removed — replaced with stepper number inputs across the app */
 
-/* Safe areas */
-.safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
-.safe-top { padding-top: max(env(safe-area-inset-top), 0px); }
+/* Safe areas.
+   These sit in @layer base on purpose. As plain CSS they were emitted after
+   @tailwind utilities, so at equal specificity `.safe-bottom` silently zeroed a
+   `pb-*` on the same element; from the base layer an explicit padding utility
+   wins instead. Put them on a wrapper that carries no padding utility of its
+   own, and reach for `calc(env(safe-area-inset-bottom, 0px) + …)` inline when
+   you need the inset *added* to a fixed padding. */
+@layer base {
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .safe-top { padding-top: env(safe-area-inset-top, 0px); }
+}
 
 /* Recharts adjustments */
 .recharts-default-tooltip {

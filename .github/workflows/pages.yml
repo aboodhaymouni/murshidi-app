@@ -1,0 +1,73 @@
+# Builds the app and publishes it to GitHub Pages.
+#
+# The OpenRouter key is NOT in this repository. It lives in the repository's
+# encrypted secrets and is injected here, at build time, so no commit ever
+# carries it — which is also why GitHub's push protection rejected the earlier
+# approach of pushing a pre-built bundle.
+#
+# Note honestly what this does and does not buy: the key is kept out of the git
+# history, but the app is a frontend with no server of its own, so the built
+# JavaScript still contains it and anyone can read it out of the shipped bundle.
+# The account's spending cap is what limits the damage. A proxy that keeps the
+# key server-side is the real fix; this is the version that ships today.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [feat/splash-ai-auth]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck, lint and test
+        run: |
+          npx tsc --noEmit -p tsconfig.app.json
+          npx eslint .
+          npm test
+
+      - name: Build
+        env:
+          VITE_BASE: /murshidi-app/
+          VITE_OPENROUTER_KEY: ${{ secrets.VITE_OPENROUTER_KEY }}
+          VITE_OPENROUTER_REFERER: ${{ secrets.VITE_OPENROUTER_REFERER }}
+        run: npm run build
+
+      - name: Add SPA fallback
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,204 +1,324 @@
+// Graduate stories — composite, illustrative journeys.
+//
+// The previous version of this screen put invented salaries, invented timelines
+// and invented "helpful" counts against named individuals ("م. العزب") at named
+// real universities, and then computed aggregate statistics from those six
+// invented records — a satisfaction rate, an average salary, an average time to
+// first job — and printed them as if they were survey findings.
+//
+// Two things changed. The people are now personas with no name and no named
+// university (public / private only), so nothing here can be mistaken for a
+// testimony that a real graduate gave. And the aggregate row is gone: a written
+// sample is not something you derive a statistic from, and the notice at the top
+// of the page says exactly that. The per-journey figures that remain are
+// illustrative and every card carries the badge next to them.
+
 import { useState } from 'react';
-import { ThumbsUp, Filter, Play, MessageCircle, FileText, Check, X } from 'lucide-react';
+import { Check, Info, X } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
+import SourceNote from '../components/SourceNote';
+import { useLang } from '../i18n/LangContext';
+import { jod, num } from '../lib/numerals';
+import type { TranslationKey } from '../i18n/translations';
+
+type TagId = 'satisfied' | 'regret' | 'switch' | 'travel' | 'remote' | 'stability' | 'longStudy';
+
+const TAG_KEYS: Record<TagId, TranslationKey> = {
+  satisfied: 'support.stories.tag.satisfied',
+  regret: 'support.stories.tag.regret',
+  switch: 'support.stories.tag.switch',
+  travel: 'support.stories.tag.travel',
+  remote: 'support.stories.tag.remote',
+  stability: 'support.stories.tag.stability',
+  longStudy: 'support.stories.tag.longStudy',
+};
+
+const TAG_ORDER: readonly TagId[] = [
+  'satisfied',
+  'regret',
+  'switch',
+  'travel',
+  'remote',
+  'stability',
+  'longStudy',
+];
+
+const UNI_KEYS: Record<'public' | 'private', TranslationKey> = {
+  public: 'support.stories.uni.public',
+  private: 'support.stories.uni.private',
+};
 
 interface Story {
-  id: number;
-  name: string;
-  major: string;
-  university: string;
-  graduationYear: number;
-  currentSalary: number;
-  helpful: number;
-  wouldRedo: boolean;
-  quote: string;
-  advice: string;
+  id: string;
+  personaKey: TranslationKey;
+  majorKey: TranslationKey;
+  quoteKey: TranslationKey;
+  adviceKey: TranslationKey;
+  uni: 'public' | 'private';
+  /** Graduation year. Rendered as plain digits — a year never takes a thousands separator. */
+  cohort: number;
+  /** Illustrative monthly figure, in JOD. Badged on every card. */
+  salary: number;
   monthsToJob: number;
-  tags: string[];
+  wouldRedo: boolean;
+  tags: readonly TagId[];
 }
 
-const stories: Story[] = [
-  { id: 1, name: 'م. العزب', major: 'الإعلام', university: 'الجامعة الأردنيّة', graduationYear: 2018,
-    currentSalary: 700, helpful: 247, wouldRedo: false, monthsToJob: 11,
-    quote: 'لو رجعت بالزمن لاخترتُ تكنولوجيا المعلومات. عملتُ سنتين في إذاعة براتب 280 ديناراً، ثم انتقلتُ إلى التسويق الرقمي براتب 700.',
-    advice: 'الإعلام التقليدي في تراجع، أمّا الإعلام الرقمي فهو المستقبل. من يختار الإعلام يُنصح بالتخصّص في الإعلام الرقمي مبكّراً.',
-    tags: ['ندم', 'تحوّل وظيفي', 'مهارات إضافيّة'],
+const STORIES: readonly Story[] = [
+  {
+    id: 's1',
+    personaKey: 'support.stories.s1.persona',
+    majorKey: 'support.stories.s1.major',
+    quoteKey: 'support.stories.s1.quote',
+    adviceKey: 'support.stories.s1.advice',
+    uni: 'public',
+    cohort: 2021,
+    salary: 700,
+    monthsToJob: 11,
+    wouldRedo: false,
+    tags: ['regret', 'switch'],
   },
-  { id: 2, name: 'ل. الحوراني', major: 'علوم الحاسوب', university: 'الجامعة الأردنيّة', graduationYear: 2020,
-    currentSalary: 1850, helpful: 432, wouldRedo: true, monthsToJob: 2,
-    quote: 'بدأتُ براتب 580 ديناراً كمطوّرة junior، واليوم بعد خمس سنوات راتبي 1,850 د.أ عن بُعد لشركة أوروبيّة.',
-    advice: 'إتقان الإنجليزيّة بجدّيّة وبدء المساهمة في المشاريع المفتوحة المصدر منذ السنة الثانية. ما يصنع الفرق هو ملف الأعمال الفعليّ.',
-    tags: ['راضٍ', 'عمل عن بُعد', 'سفر'],
+  {
+    id: 's2',
+    personaKey: 'support.stories.s2.persona',
+    majorKey: 'support.stories.s2.major',
+    quoteKey: 'support.stories.s2.quote',
+    adviceKey: 'support.stories.s2.advice',
+    uni: 'public',
+    cohort: 2021,
+    salary: 1850,
+    monthsToJob: 2,
+    wouldRedo: true,
+    tags: ['satisfied', 'remote'],
   },
-  { id: 3, name: 'د. الكساسبة', major: 'الطبّ البشري', university: 'العلوم والتكنولوجيا', graduationYear: 2015,
-    currentSalary: 1400, helpful: 521, wouldRedo: true, monthsToJob: 4,
-    quote: 'دراسة الطبّ شاقّة: ستّ سنوات أوّليّة، خمس سنوات اختصاص، وامتحانات مستمرّة. العائد المعنويّ كبير عند إنقاذ المرضى.',
-    advice: 'الطبّ ليس قراراً يُتّخذ تحت ضغط الأهل. ادخله لأنّك تحبّه، فهو طريق طويل ومرهق.',
-    tags: ['راضٍ', 'مهنة نبيلة', 'دراسة طويلة'],
+  {
+    id: 's3',
+    personaKey: 'support.stories.s3.persona',
+    majorKey: 'support.stories.s3.major',
+    quoteKey: 'support.stories.s3.quote',
+    adviceKey: 'support.stories.s3.advice',
+    uni: 'public',
+    cohort: 2015,
+    salary: 1400,
+    monthsToJob: 4,
+    wouldRedo: true,
+    tags: ['satisfied', 'longStudy'],
   },
-  { id: 4, name: 'أ. الزعبي', major: 'الهندسة المدنيّة', university: 'العلوم والتكنولوجيا', graduationYear: 2017,
-    currentSalary: 1100, helpful: 198, wouldRedo: true, monthsToJob: 8,
-    quote: 'سوق العمل المحلّي ضيّق، لكنّي سافرتُ إلى السعوديّة بعد عام وراتبي 4,500 ر.س مع بدلات سكن.',
-    advice: 'إتقان برامج AutoCAD وRevit وPlaxis قبل التخرّج. هذه البرامج تفتح أبواب الخليج.',
-    tags: ['راضٍ', 'سفر', 'خليج'],
+  {
+    id: 's4',
+    personaKey: 'support.stories.s4.persona',
+    majorKey: 'support.stories.s4.major',
+    quoteKey: 'support.stories.s4.quote',
+    adviceKey: 'support.stories.s4.advice',
+    uni: 'public',
+    cohort: 2017,
+    salary: 1100,
+    monthsToJob: 8,
+    wouldRedo: true,
+    tags: ['satisfied', 'travel'],
   },
-  { id: 5, name: 'ه. المومني', major: 'الصيدلة', university: 'الجامعة الأردنيّة', graduationYear: 2019,
-    currentSalary: 850, helpful: 312, wouldRedo: true, monthsToJob: 5,
-    quote: 'الصيدلة تمنح استقراراً وظيفيّاً. عملتُ سنتين في صيدليّة، ثمّ انتقلتُ إلى شركة أدوية كمندوبة طبّيّة براتب 850 د.أ.',
-    advice: 'الصناعة الدوائيّة أفضل من العمل في الصيدليّات. التركيز على الإنجليزيّة وإنشاء حساب LinkedIn احترافي.',
-    tags: ['راضٍ', 'استقرار', 'صناعة دوائيّة'],
+  {
+    id: 's5',
+    personaKey: 'support.stories.s5.persona',
+    majorKey: 'support.stories.s5.major',
+    quoteKey: 'support.stories.s5.quote',
+    adviceKey: 'support.stories.s5.advice',
+    uni: 'public',
+    cohort: 2019,
+    salary: 850,
+    monthsToJob: 5,
+    wouldRedo: true,
+    tags: ['satisfied', 'stability'],
   },
-  { id: 6, name: 'ي. قطيشات', major: 'علم البيانات', university: 'الأميرة سميّة', graduationYear: 2022,
-    currentSalary: 2100, helpful: 678, wouldRedo: true, monthsToJob: 3,
-    quote: 'تخرّجتُ بمعدّل 3.4، وحصلتُ بعد ثلاثة أشهر على وظيفة محلّل بيانات براتب 950 د.أ. اليوم بعد أربع سنوات راتبي 2,100 د.أ عن بُعد.',
-    advice: 'تعلّم Python و SQL والإحصاء منذ السنة الأولى، والمشاركة في مسابقات Kaggle تعطي خبرة فعليّة أهمّ من المحاضرات.',
-    tags: ['راضٍ', 'الأعلى أجراً', 'مستقبل واعد'],
+  {
+    id: 's6',
+    personaKey: 'support.stories.s6.persona',
+    majorKey: 'support.stories.s6.major',
+    quoteKey: 'support.stories.s6.quote',
+    adviceKey: 'support.stories.s6.advice',
+    uni: 'private',
+    cohort: 2022,
+    salary: 2100,
+    monthsToJob: 3,
+    wouldRedo: true,
+    tags: ['satisfied', 'remote'],
   },
 ];
 
-const filters = ['الكلّ', 'راضٍ', 'ندم', 'تحوّل وظيفي', 'سفر'];
+const INITIAL_VISIBLE = 3;
 
 export default function Stories() {
-  const [filter, setFilter] = useState('الكلّ');
+  const { t } = useLang();
+  const [filter, setFilter] = useState<TagId | 'all'>('all');
+  const [showAll, setShowAll] = useState(false);
 
-  const filtered = filter === 'الكلّ'
-    ? stories
-    : stories.filter((s) =>
-        filter === 'ندم' ? !s.wouldRedo : s.tags.some((t) => t.includes(filter))
-      );
-
-  const stats = {
-    total: stories.length,
-    satisfied: stories.filter((s) => s.wouldRedo).length,
-    avgMonths: Math.round(stories.reduce((a, s) => a + s.monthsToJob, 0) / stories.length),
-    avgSalary: Math.round(stories.reduce((a, s) => a + s.currentSalary, 0) / stories.length),
-  };
+  const filtered =
+    filter === 'all' ? STORIES : STORIES.filter((s) => s.tags.includes(filter));
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
   return (
     <div className="min-h-screen bg-gov-bg pb-24">
-      <PageHeader
-        title="تجارب الخرّيجين"
-        subtitle="قاعدة بيانات شهادات حقيقيّة"
-        right={
-          <button className="w-9 h-9 rounded-md border border-gov-line flex items-center justify-center text-gov-body">
-            <Filter size={14} />
-          </button>
-        }
-      />
+      <PageHeader title={t('support.stories.title')} subtitle={t('support.stories.subtitle')} />
 
-      {/* Aggregate stats */}
-      <div className="bg-white border-b border-gov-line px-4 py-3 grid grid-cols-4 gap-2">
-        <Mini label="عيّنة" value={stats.total.toString()} />
-        <Mini label="راضون" value={`${Math.round((stats.satisfied/stats.total)*100)}%`} tone="ok" />
-        <Mini label="فترة التوظيف" value={`${stats.avgMonths} ش`} />
-        <Mini label="متوسّط الراتب" value={`${stats.avgSalary} د`} />
+      {/* Read this first — what these journeys are, and what no one may read out of them. */}
+      <div className="bg-white border-b border-gov-line px-4 py-4">
+        <div className="flex items-start gap-2.5">
+          <Info size={16} className="text-gov-navy shrink-0 mt-0.5" strokeWidth={2.2} />
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold text-gov-ink leading-tight">
+              {t('support.stories.notice.title')}
+            </h2>
+            <p className="text-xs text-gov-body leading-relaxed mt-1.5">
+              {t('support.stories.notice.body')}
+            </p>
+            <p className="text-[11.5px] text-gov-muted leading-relaxed mt-2">
+              {t('support.stories.notice.noStats')}
+            </p>
+            <SourceNote source="illustrative" className="mt-2.5" />
+          </div>
+        </div>
       </div>
 
-      {/* Filter chips */}
-      <div className="bg-white border-b border-gov-line px-4 py-2 overflow-x-auto">
-        <div className="flex gap-2">
-          {filters.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap border transition-colors ${
-                filter === f
-                  ? 'bg-gov-navy text-white border-gov-navy'
-                  : 'bg-white text-gov-body border-gov-line hover:bg-gov-bg-soft'
-              }`}
-            >
-              {f}
-            </button>
+      {/* Filters */}
+      <div className="bg-white border-b border-gov-line px-4 py-2.5">
+        <p className="text-[10px] text-gov-muted mb-1.5">{t('support.stories.filterTitle')}</p>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          <Chip
+            label={t('support.stories.filter.all')}
+            active={filter === 'all'}
+            onClick={() => setFilter('all')}
+          />
+          {TAG_ORDER.map((tag) => (
+            <Chip
+              key={tag}
+              label={t(TAG_KEYS[tag])}
+              active={filter === tag}
+              onClick={() => setFilter(tag)}
+            />
           ))}
         </div>
       </div>
 
-      {/* Stories */}
+      <p className="px-4 pt-3 text-[11px] text-gov-muted">
+        {t('support.stories.count')}:{' '}
+        <span className="tabular font-semibold text-gov-body">{num(filtered.length)}</span>
+      </p>
+
       <div className="p-4 space-y-3">
-        {filtered.map((s) => (
-          <div key={s.id} className="gov-card overflow-hidden">
-            <div className="px-4 py-3 border-b border-gov-line flex items-center justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-bold text-gov-ink">{s.name}</p>
-                  {s.wouldRedo ? (
-                    <span className="gov-badge gov-badge-success"><Check size={10}/> راضٍ</span>
-                  ) : (
-                    <span className="gov-badge gov-badge-danger"><X size={10}/> غير راضٍ</span>
-                  )}
-                </div>
-                <p className="text-[11px] text-gov-muted mt-0.5">
-                  {s.major} · {s.university} · دفعة {s.graduationYear}
-                </p>
-              </div>
-            </div>
-
-            <div className="p-4">
-              <div className="border-r-2 border-gov-navy/30 pr-3 mb-3">
-                <p className="text-sm text-gov-body leading-relaxed">"{s.quote}"</p>
-              </div>
-
-              <div className="bg-gov-bg-soft border border-gov-line rounded-gov p-3 mb-3">
-                <p className="text-[11px] font-semibold text-gov-navy mb-1">النصيحة</p>
-                <p className="text-xs text-gov-body leading-relaxed">{s.advice}</p>
-              </div>
-
-              <table className="gov-table">
-                <tbody>
-                  <tr>
-                    <td className="text-gov-muted">الراتب الحالي</td>
-                    <td className="text-left font-semibold tabular">{s.currentSalary.toLocaleString()} د.أ</td>
-                  </tr>
-                  <tr>
-                    <td className="text-gov-muted">فترة الحصول على وظيفة</td>
-                    <td className="text-left font-semibold tabular">{s.monthsToJob} شهر</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gov-line">
-                <button className="flex items-center gap-1.5 text-xs text-gov-muted hover:text-gov-navy">
-                  <ThumbsUp size={13} />
-                  مفيد ({s.helpful})
-                </button>
-                <button className="flex items-center gap-1.5 text-xs text-gov-muted hover:text-gov-navy">
-                  <MessageCircle size={13} />
-                  تواصل
-                </button>
-                <button className="flex items-center gap-1.5 text-xs text-gov-navy font-semibold">
-                  <Play size={13} />
-                  مشاهدة الفيديو
-                </button>
-              </div>
-            </div>
-          </div>
+        {visible.map((s) => (
+          <StoryCard key={s.id} story={s} />
         ))}
+
+        {filtered.length === 0 && (
+          <p className="gov-card p-4 text-xs text-gov-muted text-center">
+            {t('support.stories.empty')}
+          </p>
+        )}
       </div>
 
-      <div className="px-4">
-        <button className="btn-secondary w-full">عرض المزيد من الشهادات</button>
-      </div>
+      {visible.length < filtered.length && (
+        <div className="px-4">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="btn-secondary w-full min-h-[44px]"
+          >
+            {t('support.stories.more')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
-      {/* Methodology */}
-      <div className="px-4 mt-3">
-        <div className="bg-gov-bg-soft border border-gov-line rounded-gov p-3">
-          <div className="flex items-start gap-2">
-            <FileText size={14} className="text-gov-muted shrink-0 mt-0.5" />
-            <p className="text-[11px] text-gov-muted leading-relaxed">
-              تُجمع الشهادات بالشراكة مع الجامعات الأردنيّة بعد موافقة خطّيّة من الخرّيج. الأسماء مختصرة لحماية الخصوصيّة.
+function StoryCard({ story }: { story: Story }) {
+  const { t, lang } = useLang();
+  const extraTags = story.tags.filter((tag) => tag !== 'satisfied' && tag !== 'regret');
+
+  return (
+    <div className="gov-card overflow-hidden">
+      <div className="px-4 py-3 border-b border-gov-line">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-gov-ink leading-tight">{t(story.personaKey)}</p>
+            <p className="text-[11px] text-gov-muted mt-1 leading-relaxed">
+              {t(story.majorKey)} · {t(UNI_KEYS[story.uni])} ·{' '}
+              {t('support.stories.card.cohort')} <span className="tabular">{String(story.cohort)}</span>
             </p>
           </div>
+          <SourceNote source="illustrative" compact className="mt-0.5" />
         </div>
+
+        <div className="flex flex-wrap gap-1.5 mt-2.5">
+          {story.wouldRedo ? (
+            <span className="gov-badge gov-badge-success">
+              <Check size={10} />
+              {t('support.stories.tag.satisfied')}
+            </span>
+          ) : (
+            <span className="gov-badge gov-badge-danger">
+              <X size={10} />
+              {t('support.stories.tag.regret')}
+            </span>
+          )}
+          {extraTags.map((tag) => (
+            <span key={tag} className="gov-badge gov-badge-neutral">
+              {t(TAG_KEYS[tag])}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-4">
+        <div className="border-s-2 border-gov-navy/30 ps-3 mb-3">
+          <p className="text-sm text-gov-body leading-relaxed">{t(story.quoteKey)}</p>
+        </div>
+
+        <div className="bg-gov-bg-soft border border-gov-line rounded-gov p-3 mb-3">
+          <p className="text-[11px] font-semibold text-gov-navy mb-1">
+            {t('support.stories.card.advice')}
+          </p>
+          <p className="text-xs text-gov-body leading-relaxed">{t(story.adviceKey)}</p>
+        </div>
+
+        <table className="gov-table">
+          <tbody>
+            <tr>
+              <td className="text-gov-muted">{t('support.stories.card.salary')}</td>
+              <td className="text-end font-semibold tabular">{jod(story.salary, lang)}</td>
+            </tr>
+            <tr>
+              <td className="text-gov-muted">{t('support.stories.card.months')}</td>
+              <td className="text-end font-semibold tabular">{num(story.monthsToJob)}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
 
-function Mini({ label, value, tone }: { label: string; value: string; tone?: 'ok' }) {
+function Chip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div className="text-center">
-      <p className={`text-base font-bold tabular ${tone === 'ok' ? 'text-gov-ok' : 'text-gov-ink'}`}>{value}</p>
-      <p className="text-[10px] text-gov-muted">{label}</p>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`px-3 py-2 rounded-md text-xs font-semibold whitespace-nowrap border transition-colors min-h-[38px] ${
+        active
+          ? 'bg-gov-navy text-white border-gov-navy'
+          : 'bg-white text-gov-body border-gov-line hover:bg-gov-bg-soft'
+      }`}
+    >
+      {label}
+    </button>
   );
 }
